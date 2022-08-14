@@ -8,6 +8,7 @@ import Success from "./components/Success";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import Userlist from "./components/Userlist";
+import SingleUser from "./components/SingleUser";
 
 import { setSuccess, deleteSuccess } from "./reducers/successReducer";
 import { setError, deleteError } from "./reducers/errorReducer";
@@ -21,7 +22,7 @@ import {
 import { setUser, resetUser } from "./reducers/userReducer";
 import { getUsers } from "./reducers/allReducer";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useMatch } from "react-router-dom";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -115,6 +116,12 @@ const App = () => {
     </Togglable>
   );
 
+  const matchU = useMatch("/users/:id");
+
+  const userMatch = matchU
+    ? allUsers.find((userFind) => userFind.id === matchU.params.id)
+    : null;
+
   if (currentUser === null) {
     return (
       <div>
@@ -175,6 +182,10 @@ const App = () => {
           }
         />
         <Route path="/users" element={<Userlist users={allUsers} />} />
+        <Route
+          path="/users/:id"
+          element={<SingleUser selectedUser={userMatch} />}
+        />
       </Routes>
     </div>
   );

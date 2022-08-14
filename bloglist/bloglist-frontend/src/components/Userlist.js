@@ -1,8 +1,12 @@
-const User = (user) => {
-  const blogs = user.blogs.length;
+import { Link } from "react-router-dom";
+
+const User = ({ user, blogs }) => {
   return (
     <div>
-      {user.name} {blogs}
+      <Link id="singlecustomer" to={`/users/${user.id}`}>
+        {user.name}
+      </Link>
+      {blogs.length}
     </div>
   );
 };
@@ -16,7 +20,7 @@ const Userlist = ({ users }) => {
         .slice()
         .sort((a, b) => a.name > b.name)
         .map((user) => (
-          <User key={user.id} name={user.name} blogs={user.blogs} />
+          <User key={user.id} user={user} blogs={user.blogs} />
         ))}
     </div>
   );
