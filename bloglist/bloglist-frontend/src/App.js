@@ -17,13 +17,16 @@ import {
   createBlog,
 } from "./reducers/blogReducer";
 
+import { setUser, resetUser } from "./reducers/userReducer";
+
 const App = () => {
   const dispatch = useDispatch();
   let savedBlogs = useSelector((state) => state.blogs);
+  let currentUser = useSelector((state) => state.user);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // eslint-disable-next-line no-unused-vars
-  const [user, setUser] = useState(null);
+  //const [user, setUser] = useState(null);
 
   useEffect(() => {
     dispatch(initializeBlogs());
@@ -33,10 +36,10 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch(setUser(user));
       blogService.setToken(user.token);
     }
-  }, []);
+  }, [dispatch]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -49,7 +52,9 @@ const App = () => {
 
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
       blogService.setToken(user.token);
-      setUser(user);
+      console.log(user);
+      console.log(currentUser);
+      dispatch(setUser(user));
       setUsername("");
       setPassword("");
     } catch (exception) {
@@ -62,6 +67,7 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogappUser");
+    dispatch(resetUser());
   };
 
   const addBlog = (blogObject) => {
@@ -106,7 +112,7 @@ const App = () => {
     </Togglable>
   );
 
-  if (user === null) {
+  if (currentUser === null) {
     return (
       <div>
         <h2>log in to application</h2>
@@ -149,7 +155,8 @@ const App = () => {
       <Success />
 
       <h3>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
+        {currentUser.name} logged in{" "}
+        <button onClick={handleLogout}>logout</button>
       </h3>
 
       {blogForm()}
@@ -164,7 +171,7 @@ const App = () => {
               blog={blog}
               addLike={addLike}
               removeBlog={deleteBlog}
-              currentUser={user}
+              currentUser={currentUser}
             />
           </div>
         ))}
