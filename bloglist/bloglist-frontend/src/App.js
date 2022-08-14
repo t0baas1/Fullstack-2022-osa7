@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -10,18 +10,24 @@ import Togglable from "./components/Togglable";
 
 import { setSuccess, deleteSuccess } from "./reducers/successReducer";
 import { setError, deleteError } from "./reducers/errorReducer";
+import {
+  initializeBlogs,
+  setVote,
+  removeBlog,
+  createBlog,
+} from "./reducers/blogReducer";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const dispatch = useDispatch();
+  let savedBlogs = useSelector((state) => state.blogs);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // eslint-disable-next-line no-unused-vars
   const [user, setUser] = useState(null);
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    dispatch(initializeBlogs());
+  }, [dispatch]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -60,45 +66,35 @@ const App = () => {
 
   const addBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility();
-    blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog));
-      dispatch(
-        setSuccess(
-          `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
-        )
-      );
-      setTimeout(() => {
-        dispatch(deleteSuccess());
-      }, 5000);
-    });
+    dispatch(createBlog(blogObject));
+    dispatch(
+      setSuccess(`a new blog ${blogObject.title} by ${blogObject.author} added`)
+    );
+    setTimeout(() => {
+      dispatch(deleteSuccess());
+    }, 5000);
   };
 
   const addLike = (blog) => {
     const newBlog = {
+      id: blog.id,
       author: blog.author,
       title: blog.title,
       url: blog.url,
       likes: blog.likes + 1,
       user: blog.user,
     };
-
-    blogService.update(blog.id, newBlog).then((returnedBlog) => {
-      setBlogs(
-        blogs.map((blog) => (blog.id !== returnedBlog.id ? blog : returnedBlog))
-      );
-    });
+    dispatch(setVote(newBlog));
   };
 
-  const removeBlog = (id) => {
-    const blog = blogs.find((b) => b.id === id);
+  const deleteBlog = (id) => {
+    const blog = savedBlogs.find((b) => b.id === id);
     const confirmRemoval = window.confirm(
       `remove blog ${blog.title} by author ${blog.author}`
     );
 
     if (confirmRemoval) {
-      blogService.deleteBlog(id).then(() => {
-        setBlogs(blogs.filter((blog) => blog.id !== id));
-      });
+      dispatch(removeBlog(id));
     }
   };
 
@@ -158,7 +154,8 @@ const App = () => {
 
       {blogForm()}
 
-      {blogs
+      {savedBlogs
+        .slice()
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <div className="blog">
@@ -166,7 +163,7 @@ const App = () => {
               key={blog.id}
               blog={blog}
               addLike={addLike}
-              removeBlog={removeBlog}
+              removeBlog={deleteBlog}
               currentUser={user}
             />
           </div>
