@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Blog from "./components/Blog";
+import Frontpage from "./components/Frontpage";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import Error from "./components/Error";
 import Success from "./components/Success";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
+import Userlist from "./components/Userlist";
 
 import { setSuccess, deleteSuccess } from "./reducers/successReducer";
 import { setError, deleteError } from "./reducers/errorReducer";
@@ -18,17 +19,21 @@ import {
 } from "./reducers/blogReducer";
 
 import { setUser, resetUser } from "./reducers/userReducer";
+import { getUsers } from "./reducers/allReducer";
+
+import { Routes, Route } from "react-router-dom";
 
 const App = () => {
   const dispatch = useDispatch();
   let savedBlogs = useSelector((state) => state.blogs);
   let currentUser = useSelector((state) => state.user);
+  let allUsers = useSelector((state) => state.all);
+  console.log(allUsers);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // eslint-disable-next-line no-unused-vars
-  //const [user, setUser] = useState(null);
 
   useEffect(() => {
+    dispatch(getUsers());
     dispatch(initializeBlogs());
   }, [dispatch]);
 
@@ -52,8 +57,6 @@ const App = () => {
 
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
       blogService.setToken(user.token);
-      console.log(user);
-      console.log(currentUser);
       dispatch(setUser(user));
       setUsername("");
       setPassword("");
@@ -158,23 +161,21 @@ const App = () => {
         {currentUser.name} logged in{" "}
         <button onClick={handleLogout}>logout</button>
       </h3>
-
-      {blogForm()}
-
-      {savedBlogs
-        .slice()
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <div className="blog">
-            <Blog
-              key={blog.id}
-              blog={blog}
-              addLike={addLike}
-              removeBlog={deleteBlog}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Frontpage
+              blogForm={blogForm()}
+              savedBlogs={savedBlogs}
               currentUser={currentUser}
+              addLike={addLike}
+              deleteBlog={deleteBlog}
             />
-          </div>
-        ))}
+          }
+        />
+        <Route path="/users" element={<Userlist users={allUsers} />} />
+      </Routes>
     </div>
   );
 };
