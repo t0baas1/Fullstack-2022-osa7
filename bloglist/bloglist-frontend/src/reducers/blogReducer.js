@@ -53,4 +53,12 @@ export const setVote = (blog) => {
   };
 };
 
+export const setComment = (c, id) => {
+  const comment = {comment: c}
+  return async (dispatch) => {
+    const commentedBlog = await blogService.comment(comment, id)
+    dispatch(addVote(commentedBlog))
+  }
+}
+
 export default blogSlice.reducer;

@@ -11,6 +11,8 @@ import Userlist from "./components/Userlist";
 import SingleUser from "./components/SingleUser";
 import SingleBlog from "./components/SingleBlog";
 
+import { Form, Button } from "react-bootstrap"
+
 import { setSuccess, deleteSuccess } from "./reducers/successReducer";
 import { setError, deleteError } from "./reducers/errorReducer";
 import {
@@ -18,6 +20,7 @@ import {
   setVote,
   removeBlog,
   createBlog,
+  setComment
 } from "./reducers/blogReducer";
 
 import { setUser, resetUser } from "./reducers/userReducer";
@@ -108,6 +111,10 @@ const App = () => {
     }
   };
 
+  const addComment = (comment, id) => {
+    dispatch(setComment(comment,id))
+  }
+
   const blogFormRef = useRef();
 
   const blogForm = () => (
@@ -132,11 +139,11 @@ const App = () => {
       paddingRight: 5,
     }
     return ( 
-      <div class="menu">
+      <div className="menu">
         <Link style={padding} to="/">blogs</Link>
         <Link style={padding} to="/users">users</Link>
           {currentUser.name} logged in{" "}
-          <button onClick={handleLogout}>logout</button>
+          <Button variant="secondary" onClick={handleLogout}>logout</Button>
       </div>
     )
   }
@@ -144,44 +151,42 @@ const App = () => {
 
   if (currentUser === null) {
     return (
-      <div>
-        <h2>log in to application</h2>
+      <div className="container">
+        <h2>Log in to application</h2>
 
         <Error />
 
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
+        <Form onSubmit={handleLogin}>
+          <Form.Group>
+            <Form.Label>username</Form.Label>
+            <Form.Control
               id="username"
               type="text"
               value={username}
               name="Username"
               onChange={({ target }) => setUsername(target.value)}
             />
-          </div>
-          <div>
-            password
-            <input
+          <Form.Label>password</Form.Label>
+            <Form.Control
               id="password"
               type="password"
               value={password}
               name="Password"
               onChange={({ target }) => setPassword(target.value)}
             />
-          </div>
-          <button id="login-button" type="submit">
+          <Button variant="primary" id="login-button" type="submit">
             login
-          </button>
-        </form>
+          </Button>
+          </Form.Group>
+        </Form>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="container">
       <Menu/>
-      <h2>blog app</h2>
+      <h2>Blog app</h2>
       <Success />
       <Routes>
         <Route
@@ -198,7 +203,7 @@ const App = () => {
           path="/users/:id"
           element={<SingleUser selectedUser={userMatch} />}
         />
-        <Route path="/blogs/:id" element={<SingleBlog selectedBlog={blogMatch} currentUser={currentUser} addLike={addLike} deleteBlog={deleteBlog}/>} />
+        <Route path="/blogs/:id" element={<SingleBlog selectedBlog={blogMatch} currentUser={currentUser} addLike={addLike} deleteBlog={deleteBlog} addComment={addComment}/>} />
       </Routes>
     </div>
   );

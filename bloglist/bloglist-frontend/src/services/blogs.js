@@ -34,5 +34,16 @@ const deleteBlog = async (id) => {
   return response.data;
 };
 
+const comment = async (comment, id) => {
+  const url = baseUrl + "/" + id + "/comments"
+  console.log(comment)
+  const config = {
+    headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+  };
+  console.log(comment)
+  const response = await axios.post(url, comment, config)
+  return response.data
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, setToken, create, update, deleteBlog };
+export default { getAll, setToken, create, update, deleteBlog, comment };

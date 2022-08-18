@@ -1,4 +1,5 @@
 import Blog from "./Blog";
+import { Table } from "react-bootstrap"
 const Frontpage = ({
   blogForm,
   savedBlogs,
@@ -9,21 +10,29 @@ const Frontpage = ({
   return (
     <div>
       {blogForm}
-
-      {savedBlogs
-        .slice()
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <div className="blog">
-            <Blog
-              key={blog.id}
-              blog={blog}
-              addLike={addLike}
-              removeBlog={deleteBlog}
-              currentUser={currentUser}
-            />
-          </div>
-        ))}
+      <Table striped>
+        <tbody>
+          {savedBlogs
+          .slice()
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <tr key={blog.id}>
+              <td>
+              <Blog
+                key={blog.id}
+                blog={blog}
+                addLike={addLike}
+                removeBlog={deleteBlog}
+                currentUser={currentUser}
+              />
+            </td>
+            <td>
+              {blog.author}
+            </td>
+            </tr>
+          ))}
+        </tbody>
+        </Table>
     </div>
   );
 };
