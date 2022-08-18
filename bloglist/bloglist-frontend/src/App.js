@@ -9,6 +9,7 @@ import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import Userlist from "./components/Userlist";
 import SingleUser from "./components/SingleUser";
+import SingleBlog from "./components/SingleBlog";
 
 import { setSuccess, deleteSuccess } from "./reducers/successReducer";
 import { setError, deleteError } from "./reducers/errorReducer";
@@ -29,7 +30,6 @@ const App = () => {
   let savedBlogs = useSelector((state) => state.blogs);
   let currentUser = useSelector((state) => state.user);
   let allUsers = useSelector((state) => state.all);
-  console.log(allUsers);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -121,6 +121,11 @@ const App = () => {
   const userMatch = matchU
     ? allUsers.find((userFind) => userFind.id === matchU.params.id)
     : null;
+  
+  const matchB = useMatch("/blogs/:id")
+  const blogMatch = matchB
+    ? savedBlogs.find(blog => blog.id === matchB.params.id)
+    : null;
 
   if (currentUser === null) {
     return (
@@ -175,9 +180,6 @@ const App = () => {
             <Frontpage
               blogForm={blogForm()}
               savedBlogs={savedBlogs}
-              currentUser={currentUser}
-              addLike={addLike}
-              deleteBlog={deleteBlog}
             />
           }
         />
@@ -186,6 +188,7 @@ const App = () => {
           path="/users/:id"
           element={<SingleUser selectedUser={userMatch} />}
         />
+        <Route path="/blogs/:id" element={<SingleBlog selectedBlog={blogMatch} currentUser={currentUser} addLike={addLike} deleteBlog={deleteBlog}/>} />
       </Routes>
     </div>
   );

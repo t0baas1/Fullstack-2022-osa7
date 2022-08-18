@@ -1,5 +1,8 @@
 const SingleUser = (selectedUser) => {
   const user = selectedUser.selectedUser;
+  if (!user) {
+    return null
+  }
   const blogs = user.blogs;
   return (
     <div>
