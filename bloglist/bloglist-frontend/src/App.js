@@ -23,7 +23,7 @@ import {
 import { setUser, resetUser } from "./reducers/userReducer";
 import { getUsers } from "./reducers/allReducer";
 
-import { Routes, Route, useMatch } from "react-router-dom";
+import { Routes, Route, useMatch, Link } from "react-router-dom";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -127,6 +127,21 @@ const App = () => {
     ? savedBlogs.find(blog => blog.id === matchB.params.id)
     : null;
 
+  const Menu = () => {
+    const padding = {
+      paddingRight: 5,
+    }
+    return ( 
+      <div class="menu">
+        <Link style={padding} to="/">blogs</Link>
+        <Link style={padding} to="/users">users</Link>
+          {currentUser.name} logged in{" "}
+          <button onClick={handleLogout}>logout</button>
+      </div>
+    )
+  }
+
+
   if (currentUser === null) {
     return (
       <div>
@@ -165,14 +180,9 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
-
+      <Menu/>
+      <h2>blog app</h2>
       <Success />
-
-      <h3>
-        {currentUser.name} logged in{" "}
-        <button onClick={handleLogout}>logout</button>
-      </h3>
       <Routes>
         <Route
           path="/"

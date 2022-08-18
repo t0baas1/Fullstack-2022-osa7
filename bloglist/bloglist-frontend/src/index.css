@@ -12,6 +12,10 @@
   background: lightgrey;
 }
 
+.menu {
+  background: lightgrey
+}
+
 .success {
   color: green;
   background: lightgrey;
